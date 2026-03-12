@@ -1,0 +1,29 @@
+{
+  "name": "week5-vue",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "build-only": "vite build"
+  },
+  "dependencies": {
+    "@vee-validate/rules": "^4.15.1",
+    "vee-validate": "^4.15.1",
+    "vue": "^3.5.29",
+    "vue-router": "^4.6.4",
+    "vuex": "^4.1.0",
+    "yup": "^1.7.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.4",
+    "npm-run-all2": "^8.0.4",
+    "vite": "^7.3.1",
+    "vite-plugin-vue-devtools": "^8.0.6"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
+}
