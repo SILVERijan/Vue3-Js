@@ -7,32 +7,40 @@ import * as yup from 'yup'
 
 const store = useStore()
 const router = useRouter()
-const loginError = ref('')
+const registerError = ref('')
 
 const schema = yup.object({
+  name: yup.string().required('Name is required'),
   email: yup.string().required('Email is required').email('Must be a valid email'),
-  password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters')
+  password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
+  password_confirmation: yup.string()
+    .required('Please confirm your password')
+    .oneOf([yup.ref('password')], 'Passwords must match')
 })
 
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema: schema,
   initialValues: {
+    name: '',
     email: '',
-    password: ''
+    password: '',
+    password_confirmation: ''
   }
 })
 
+const { value: name, errorMessage: nameErr } = useField('name')
 const { value: email, errorMessage: emailErr } = useField('email')
 const { value: password, errorMessage: passwordErr } = useField('password')
+const { value: password_confirmation, errorMessage: confErr } = useField('password_confirmation')
 
 const onSubmit = handleSubmit(async (values) => {
-  loginError.value = ''
+  registerError.value = ''
   try {
-    await store.dispatch('loginUser', values)
+    await store.dispatch('registerUser', values)
     router.push('/day1')
   } catch (error) {
-    console.error('Login failed:', error)
-    loginError.value = error.response?.data?.message || 'Invalid credentials'
+    console.error('Registration failed:', error)
+    registerError.value = error.response?.data?.message || 'Registration failed. Please try again.'
   }
 })
 </script>
@@ -40,11 +48,30 @@ const onSubmit = handleSubmit(async (values) => {
 <template>
   <div class="login-container animate-in">
     <div class="login-card">
-      <div v-if="loginError" class="alert-error mb-1">
-        {{ loginError }}
+      <div class="login-header">
+        <h1 class="login-title">Vue<span>Step</span></h1>
+        <p class="login-subtitle">Create your account to get started.</p>
+      </div>
+
+      <div v-if="registerError" class="alert-error mb-1">
+        {{ registerError }}
       </div>
 
       <form @submit.prevent="onSubmit" class="login-form">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <div class="input-wrapper">
+            <input 
+              v-model="name" 
+              type="text" 
+              class="form-input" 
+              placeholder="John Doe"
+              :class="{ 'input-error': nameErr }"
+            />
+            <span v-if="nameErr" class="form-error">{{ nameErr }}</span>
+          </div>
+        </div>
+
         <div class="form-group">
           <label class="form-label">Email Address</label>
           <div class="input-wrapper">
@@ -73,20 +100,35 @@ const onSubmit = handleSubmit(async (values) => {
           </div>
         </div>
 
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <div class="input-wrapper">
+            <input 
+              v-model="password_confirmation" 
+              type="password" 
+              class="form-input" 
+              placeholder="••••••••"
+              :class="{ 'input-error': confErr }"
+            />
+            <span v-if="confErr" class="form-error">{{ confErr }}</span>
+          </div>
+        </div>
+
         <button type="submit" class="btn btn-primary login-btn" :disabled="isSubmitting">
           <span v-if="isSubmitting" class="loader"></span>
-          <span v-else>Sign In</span>
+          <span v-else>Register</span>
         </button>
       </form>
 
       <div class="login-footer">
-        <p>Don't have an account? <router-link to="/register" class="link">Request access</router-link></p>
+        <p>Already have an account? <router-link to="/login" class="link">Sign In</router-link></p>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* Reusing styles from Login.vue */
 .login-container {
   display: flex;
   align-items: center;

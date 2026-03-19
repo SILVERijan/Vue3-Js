@@ -35,7 +35,10 @@ const currentUser = computed(() => store.getters.currentUser)
           :class="{ active: route.path.startsWith(day.path) }"
         >
           <div class="nav-info">
-            <div class="nav-label-item">{{ day.label }}</div>
+            <div class="nav-label-item">
+              {{ day.label }}
+              <svg v-if="day.path === '/day5' && !isLoggedIn" class="lock-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
             <div class="nav-sub">{{ day.subtitle }}</div>
           </div>
         </router-link>
@@ -131,7 +134,18 @@ const currentUser = computed(() => store.getters.currentUser)
   color: white;
 }
 
-.nav-label-item { font-weight: 700; font-size: 0.9rem; }
+.nav-label-item { 
+  font-weight: 700; 
+  font-size: 0.9rem; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.lock-icon {
+  margin-left: 0.5rem;
+  opacity: 0.5;
+  color: var(--text-dim);
+}
 .nav-sub { font-size: 0.75rem; opacity: 0.7; }
 
 .nav-divider {
