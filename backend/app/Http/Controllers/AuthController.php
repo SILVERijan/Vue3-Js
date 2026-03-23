@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -10,6 +11,8 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    use ApiResponser;
+
     /**
      * Register a new user, return an API token.
      */
@@ -29,8 +32,7 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Registration successful',
+        return $this->successResponse([
             'user'    => [
                 'id'    => $user->id,
                 'name'  => $user->name,
@@ -38,7 +40,7 @@ class AuthController extends Controller
             ],
             'token'      => $token,
             'token_type' => 'Bearer',
-        ], 201);
+        ], 'Registration successful', 201);
     }
 
     /**
@@ -62,8 +64,7 @@ class AuthController extends Controller
         $user->tokens()->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Login successful',
+        return $this->successResponse([
             'user'    => [
                 'id'    => $user->id,
                 'name'  => $user->name,
@@ -71,7 +72,7 @@ class AuthController extends Controller
             ],
             'token'      => $token,
             'token_type' => 'Bearer',
-        ]);
+        ], 'Login successful');
     }
 
     /**
@@ -79,7 +80,7 @@ class AuthController extends Controller
      */
     public function me(Request $request)
     {
-        return response()->json([
+        return $this->successResponse([
             'user' => $request->user(),
         ]);
     }
@@ -91,8 +92,6 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json([
-            'message' => 'Logged out successfully',
-        ]);
+        return $this->successResponse(null, 'Logged out successfully');
     }
 }

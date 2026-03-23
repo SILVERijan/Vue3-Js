@@ -31,7 +31,7 @@ async function fetchTodos() {
   todoLoading.value = true
   try {
     const res = await api.get('/todos')
-    todos.value = res.data
+    todos.value = res.data.data
   } catch (error) {
     console.error('Error fetching todos:', error)
   } finally {
@@ -43,7 +43,7 @@ async function addTodo() {
   if (newTodo.value.trim()) {
     try {
       const res = await api.post('/todos', { text: newTodo.value })
-      todos.value.unshift(res.data)
+      todos.value.unshift(res.data.data)
       newTodo.value = ''
     } catch (error) {
       console.error('Error adding todo:', error)
@@ -54,7 +54,7 @@ async function addTodo() {
 async function toggleTodo(todo) {
   try {
     const res = await api.patch(`/todos/${todo.id}`, { done: todo.done })
-    // Update local state if needed (Vue's v-model already updated it, but this confirms it)
+    
   } catch (error) {
     console.error('Error toggling todo:', error)
     todo.done = !todo.done // Revert on failure
@@ -71,7 +71,7 @@ async function deleteTodo(id) {
 }
 
 function startEdit(todo) {
-  editingId.value = todo.id
+  editingId.value = todo.idw
   editText.value = todo.text
 }
 
@@ -82,7 +82,7 @@ async function updateTodo() {
     const res = await api.patch(`/todos/${editingId.value}`, { text: editText.value })
     const index = todos.value.findIndex(t => t.id === editingId.value)
     if (index !== -1) {
-      todos.value[index].text = res.data.text
+      todos.value[index].text = res.data.data.text
     }
     cancelEdit()
   } catch (error) {
@@ -103,21 +103,10 @@ function cancelEdit() {
       <p class="day-desc">API calls and a persistent Todo app with update feature.</p>
     </div>
 
-    <!-- API -->
-    <div class="card">
-      <h2 class="section-title">API Posts (onMounted)</h2>
-      <div v-if="loading" class="text-dim">Loading...</div>
-      <div v-else class="flex flex-column gap-1">
-        <div v-for="post in posts" :key="post.id" class="demo-box" style="font-size: 0.85rem;">
-          <strong>{{ post.title }}</strong>
-        </div>
-      </div>
-    </div>
-
     <!-- Todo App -->
     <div class="card">
       <div class="card-header">
-        <h2 class="section-title">Persistent Todo App</h2>
+        <h2 class="section-title">Todo App</h2>
         <span v-if="todoLoading" class="loader-sm"></span>
       </div>
       

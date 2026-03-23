@@ -4,9 +4,9 @@ import api from '../api/axios'
 const store = createStore({
   state: {
     count: 0,
-    user: JSON.parse(localStorage.getItem('user')) || null,
+    user: JSON.parse(sessionStorage.getItem('user')) || null,
     notifications: [],
-    isLoggedIn: !!localStorage.getItem('auth_token')
+    isLoggedIn: !!sessionStorage.getItem('auth_token')
   },
   getters: {
     doubleCount: (state) => state.count * 2,
@@ -28,16 +28,16 @@ const store = createStore({
     SET_USER(state, user) {
       state.user = user
       state.isLoggedIn = true
-      localStorage.setItem('user', JSON.stringify(user))
+      sessionStorage.setItem('user', JSON.stringify(user))
     },
     SET_TOKEN(state, token) {
-      localStorage.setItem('auth_token', token)
+      sessionStorage.setItem('auth_token', token)
     },
     LOGOUT(state) {
       state.user = null
       state.isLoggedIn = false
-      localStorage.removeItem('auth_token')
-      localStorage.removeItem('user')
+      sessionStorage.removeItem('auth_token')
+      sessionStorage.removeItem('user')
     },
     ADD_NOTIFICATION(state, message) {
       state.notifications.push({
@@ -61,19 +61,19 @@ const store = createStore({
     },
     async loginUser({ commit }, credentials) {
       const response = await api.post('/login', credentials)
-      const { user, token } = response.data
+      const { user, token } = response.data.data
       commit('SET_USER', user)
       commit('SET_TOKEN', token)
       commit('ADD_NOTIFICATION', `Welcome back, ${user.name}!`)
-      return response.data
+      return response.data.data
     },
     async registerUser({ commit }, userData) {
       const response = await api.post('/register', userData)
-      const { user, token } = response.data
+      const { user, token } = response.data.data
       commit('SET_USER', user)
       commit('SET_TOKEN', token)
       commit('ADD_NOTIFICATION', `Account created successfully. Welcome, ${user.name}!`)
-      return response.data
+      return response.data.data
     },
     async logout({ commit }) {
       try {

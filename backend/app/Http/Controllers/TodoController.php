@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Todo;
+use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 
 class TodoController extends Controller
 {
+    use ApiResponser;
+
     public function index(Request $request)
     {
-        return $request->user()->todos()->latest()->get();
+        return $this->successResponse($request->user()->todos()->latest()->get(), 'Todos retrieved successfully');
     }
 
     public function store(Request $request)
@@ -18,16 +21,18 @@ class TodoController extends Controller
             'text' => 'required|string|max:255',
         ]);
 
-        return $request->user()->todos()->create([
+        $todo = $request->user()->todos()->create([
             'text' => $validated['text'],
             'done' => false,
         ]);
+
+        return $this->successResponse($todo, 'Todo created successfully', 201);
     }
 
     public function update(Request $request, Todo $todo)
     {
         if ($todo->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return $this->errorResponse('Unauthorized', 403);
         }
 
         $validated = $request->validate([
@@ -37,17 +42,17 @@ class TodoController extends Controller
 
         $todo->update($validated);
 
-        return $todo;
+        return $this->successResponse($todo, 'Todo updated successfully');
     }
 
     public function destroy(Request $request, Todo $todo)
     {
         if ($todo->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return $this->errorResponse('Unauthorized', 403);
         }
 
         $todo->delete();
 
-        return response()->json(['message' => 'Deleted']);
+        return $this->successResponse(null, 'Todo deleted successfully');
     }
 }

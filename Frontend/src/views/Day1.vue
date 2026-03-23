@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 
 // Data binding demo
-const message = ref('Hello from Vue.js! 🚀')
+const message = ref('Hello from Vue.js!')
 const customMessage = ref('')
 const userInput = ref('')
 const submittedValue = ref('')
